@@ -52,7 +52,8 @@ Most CT simulation projects stop at "reconstruct and show it looks good." This p
 ## 3. Simulation Pipeline
 
 ```
-Phantom Generation → Forward Projection (Sinogram) → Noise Addition → Reconstruction (FBP) → Performance Evaluation (MTF, NPS, CNR)
+Phantom Generation → Forward Projection (Sinogram) → Noise Addition → Reconstruction (FBP) 
+→ Performance Evaluation (MTF, NPS, CNR)
 ```
 
 ### 3.1 Phantom Generation
@@ -61,17 +62,16 @@ Phantom Generation → Forward Projection (Sinogram) → Noise Addition → Reco
 - **Custom QA phantom**: designed specifically for quantitative metrics evaluation, containing:
   - A small high-contrast point/wire insert for PSF/MTF measurement.
   - A sharp edge for Edge Spread Function (ESF)-based MTF measurement.
-  - Low-contrast inserts at known μ values for CNR measurement.
+  - Low-contrast inserts at known $\mu$ values for CNR measurement.
   - A uniform region for NPS measurement.
 
 ### 3.2 Forward Projection (Sinogram Generation)
 
-- Parallel-beam ray-tracing through the phantom to compute line integrals of the attenuation coefficient μ(x, y) based on **Beer-Lambert's Law**:
+- Parallel-beam ray-tracing through the phantom to compute line integrals of the attenuation coefficient $\mu(x,\, y)$ based on **Beer-Lambert's Law**:
 
-```
-I = I₀ · exp(−∫ μ(x,y) dl)
-p = −ln(I / I₀) = ∫ μ(x,y) dl
-```
+$$I = I_0 \cdot e^{-\int \mu(x,y) \, dl}$$
+
+$$p = -\ln\left(\frac{I}{I_0}\right) = \int \mu(x,y) \, dl$$
 
 - Sinograms are generated for varying numbers of projection angles (e.g., 360, 180, 90, 45, 20, 10) to study the effect of angular sampling on reconstruction quality.
 
@@ -79,11 +79,9 @@ p = −ln(I / I₀) = ∫ μ(x,y) dl
 
 - Realistic **Poisson noise** applied in the pre-log intensity domain (since photon counting follows a Poisson distribution):
 
-```
-I_measured ~ Poisson(I₀ · exp(−∫ μ dl))
-```
+$$I_{\text{measured}} \sim \text{Poisson}\!\left(I_0 \cdot e^{-\int \mu \, dl}\right)$$
 
-- Multiple dose levels simulated by varying the incident photon count I₀: 10⁶, 10⁵, 10⁴, 10³.
+- Multiple dose levels simulated by varying the incident photon count $I_0$: $10^6$, $10^5$, $10^4$, $10^3$.
 - Noise propagation through the log-transform and into the reconstruction domain is studied.
 
 ### 3.4 Filtered Back Projection (FBP) Reconstruction
@@ -91,11 +89,9 @@ I_measured ~ Poisson(I₀ · exp(−∫ μ dl))
 - Custom implementation of FBP based on the **Fourier Slice Theorem**.
 - **Step 1 — Filtering:** each projection is filtered in the frequency domain:
 
-```
-p_filtered(θ, s) = F⁻¹{ |ω| · H(ω) · F{p(θ, s)} }
-```
+$$p_{\text{filtered}}(\theta, s) = \mathcal{F}^{-1}\!\left\{ |\omega| \cdot H(\omega) \cdot \mathcal{F}\{p(\theta, s)\} \right\}$$
 
-  where H(ω) is the apodization window.
+  where $H(\omega)$ is the apodization window.
 
 - **Step 2 — Back Projection:** filtered projections are smeared back across the image grid and summed over all angles.
 - Multiple filter kernels implemented: **Ram-Lak** (ramp), **Shepp-Logan**, **Cosine**, and **Hamming**-windowed ramp.
@@ -105,24 +101,22 @@ p_filtered(θ, s) = F⁻¹{ |ω| · H(ω) · F{p(θ, s)} }
 #### MTF (Modulation Transfer Function)
 Measures the system's ability to preserve contrast at each spatial frequency.
 
-- **PSF method:** reconstruct a point object → compute |FFT(PSF)|, normalized.
-- **Edge method:** reconstruct a sharp edge → extract ESF → differentiate to get LSF → compute |FFT(LSF)|, normalized.
+- **PSF method:** reconstruct a point object → compute $|\mathcal{F}\{\text{PSF}\}|$, normalized.
+- **Edge method:** reconstruct a sharp edge → extract ESF → differentiate to get LSF → compute $|\mathcal{F}\{\text{LSF}\}|$, normalized.
 
 #### NPS (Noise Power Spectrum)
 Characterizes the frequency distribution of noise in reconstructed images.
 
 - Extract uniform ROIs from noisy reconstructions.
-- Compute 2D NPS = ⟨|FFT(ROI − mean)|²⟩ averaged over multiple ROIs.
-- Radially average to obtain 1D NPS(f).
+- Compute 2D NPS: $\text{NPS}(u,v) = \frac{\Delta x \cdot \Delta y}{N_x \cdot N_y} \left\langle \left| \mathcal{F}\{\text{ROI} - \overline{\text{ROI}}\} \right|^2 \right\rangle$ averaged over multiple ROIs.
+- Radially average to obtain 1D $\text{NPS}(f)$.
 
 #### CNR (Contrast-to-Noise Ratio)
 Quantifies object detectability against a noisy background.
 
-```
-CNR = |μ_insert − μ_background| / σ_background
-```
+$$\text{CNR} = \frac{|\mu_{\text{insert}} - \mu_{\text{background}}|}{\sigma_{\text{background}}}$$
 
-Evaluated against the Rose criterion (CNR ≥ 3–5 for reliable human detection).
+Evaluated against the Rose criterion ($\text{CNR} \geq 3\text{–}5$ for reliable human detection).
 
 ---
 
@@ -132,10 +126,10 @@ Evaluated against the Rose criterion (CNR ≥ 3–5 for reliable human detection
 |---|-----------|-------------|
 | 1 | **Baseline Reconstruction Quality** | Reconstruct Shepp-Logan phantom at 360, 180, 90, 45, 20, 10 projection angles. Visual comparison + RMSE/SSIM. Demonstrate streak artifacts at low angle counts. |
 | 2 | **Filter Comparison** | Reconstruct the same noisy sinogram with Ram-Lak, Shepp-Logan, Cosine, and Hamming filters. Measure MTF and NPS for each to quantify the resolution-noise trade-off. |
-| 3 | **Dose vs. Image Quality** | Fix 180 projections, vary I₀ from 10⁶ to 10³. Measure NPS, CNR, RMSE, and SSIM at each dose. Plot all metrics vs. dose. |
-| 4 | **MTF vs. Number of Projections** | Fix dose (I₀ = 10⁵), vary projections. Measure MTF degradation with angular undersampling. |
+| 3 | **Dose vs. Image Quality** | Fix 180 projections, vary $I_0$ from $10^6$ to $10^3$. Measure NPS, CNR, RMSE, and SSIM at each dose. Plot all metrics vs. dose. |
+| 4 | **MTF vs. Number of Projections** | Fix dose ($I_0 = 10^5$), vary projections. Measure MTF degradation with angular undersampling. |
 | 5 | **Integrated System Characterization** | Select representative operating points (high/low dose × many/few angles). Show side-by-side: reconstruction, MTF curve, NPS curve, CNR value. Summary comparison table. |
-| 6 | **Detectability Index (Bonus)** | Compute NEQ(f) = MTF²(f) / NPS(f) to unify resolution and noise into a single efficiency metric. |
+| 6 | **Detectability Index (Bonus)** | Compute $\text{NEQ}(f) = \text{MTF}^2(f) \,/\, \text{NPS}(f)$ to unify resolution and noise into a single efficiency metric. |
 
 ---
 
@@ -158,8 +152,8 @@ Evaluated against the Rose criterion (CNR ≥ 3–5 for reliable human detection
 ### Mohamed Ashraf — Noise Modeling & Dose Simulation
 
 - Implement the Poisson noise model on raw projection data (pre-log domain).
-- Simulate multiple dose levels by varying I₀.
-- Generate dose-vs-quality curves (SNR, RMSE, SSIM as functions of I₀).
+- Simulate multiple dose levels by varying $I_0$.
+- Generate dose-vs-quality curves (SNR, RMSE, SSIM as functions of $I_0$).
 - Study and visualize noise propagation through the reconstruction pipeline.
 
 ### Rashed Mamdouh — System Performance Metrics (MTF, NPS, CNR)
@@ -252,7 +246,7 @@ imaging_project/
 2. Quantitative characterization of system performance using MTF, NPS, and CNR — the standard metrics used in clinical CT quality assurance.
 3. Systematic analysis of how projection count, dose level, and filter choice affect image quality, demonstrated through parameter sweep experiments.
 4. Publication-quality figures and comparison tables summarizing trade-offs.
-5. (Bonus) Noise-Equivalent Quanta NEQ(f) = MTF²(f) / NPS(f) as a unified system efficiency metric.
+5. (Bonus) Noise-Equivalent Quanta $\text{NEQ}(f) = \text{MTF}^2(f) \,/\, \text{NPS}(f)$ as a unified system efficiency metric.
 
 ---
 

@@ -1,6 +1,15 @@
 # Implementation Plan — 2D CT Simulation & System Performance Characterization
 
-## Team: 4 Members | Course: SBE 4220 — Medical Imaging II | Spring 2026
+## Team 18: 5 Members | Course: SBE 4220 — Medical Imaging II | Spring 2026
+
+### Team Members
+| #  | Name              |
+|----|-------------------|
+| 1  | Mahmoud Mohamed   |
+| 2  | Mahmoud Bahaa     |
+| 3  | Mohamed Ashraf    |
+| 4  | Rashed Mamdouh    |
+| 5  | Ammar Yasser      |
 
 ---
 
@@ -41,13 +50,13 @@ Most CT simulation projects stop at "reconstruct and show it looks good." This p
 
 ---
 
-## 3. Task Division (4 Members)
+## 3. Task Division (5 Members)
 
-### Member A — Phantom Generation & Forward Projection
+### Mahmoud Mohamed — Phantom Generation & Forward Projection
 
 **Responsibilities:**
 - Implement the Shepp-Logan phantom generator (parameterized ellipses)
-- Implement a **QA phantom** for metrics: a disk with embedded features
+- Design and implement the **QA phantom** for metrics: a disk with embedded features
   - A small high-contrast point/wire for PSF/MTF measurement
   - A sharp edge for edge-spread-function (ESF) based MTF measurement
   - Low-contrast inserts at known μ values for CNR measurement
@@ -62,13 +71,12 @@ Most CT simulation projects stop at "reconstruct and show it looks good." This p
 
 ---
 
-### Member B — FBP Reconstruction & Filter Analysis
+### Mahmoud Bahaa — FBP Reconstruction & Filter Analysis
 
 **Responsibilities:**
 - Implement Filtered Back Projection from scratch (not just calling a library)
 - Implement multiple filters: Ram-Lak (ramp), Shepp-Logan, cosine, Hamming-windowed ramp
-- Reconstruct from sinograms produced by Member A
-- Provide reconstructions to Members C and D for quantitative analysis
+- Reconstruct from sinograms and provide to other members for quantitative analysis
 - Visualize the visual effect of each filter
 
 **Must understand:**
@@ -80,14 +88,14 @@ Most CT simulation projects stop at "reconstruct and show it looks good." This p
 
 ---
 
-### Member C — Noise Modeling & Dose Simulation
+### Mohamed Ashraf — Noise Modeling & Dose Simulation
 
 **Responsibilities:**
 - Implement Poisson noise model on raw projection data (pre-log domain)
 - Simulate different dose levels by varying I₀ (incident photon count): 10⁶, 10⁵, 10⁴, 10³
-- Reconstruct noisy sinograms and provide to Member D for NPS/CNR analysis
+- Reconstruct noisy sinograms and provide to Rashed for NPS/CNR analysis
 - Generate dose-vs-quality curves (SNR, RMSE, SSIM as functions of I₀)
-- Visualize noise appearance at different dose levels
+- Study and visualize noise propagation through the reconstruction pipeline
 
 **Must understand:**
 - Poisson statistics: why photon counting follows Poisson distribution
@@ -98,7 +106,7 @@ Most CT simulation projects stop at "reconstruct and show it looks good." This p
 
 ---
 
-### Member D — System Performance Metrics (MTF, NPS, CNR)
+### Rashed Mamdouh — System Performance Metrics (MTF, NPS, CNR)
 
 **Responsibilities:**
 - **MTF (Modulation Transfer Function):**
@@ -115,8 +123,7 @@ Most CT simulation projects stop at "reconstruct and show it looks good." This p
   - Measure mean and std in two ROIs (insert vs. background) from the QA phantom
   - CNR = |μ_insert − μ_background| / σ_background
   - Plot CNR vs. dose and CNR vs. number of projections
-- Lead the final integrated analysis: "How do MTF, NPS, and CNR together describe system performance?"
-- Co-lead presentation slide preparation
+- Lead the integrated analysis: "How do MTF, NPS, and CNR together describe system performance?"
 
 **Must understand:**
 - What MTF physically means: the system's ability to reproduce contrast at each spatial frequency
@@ -127,13 +134,30 @@ Most CT simulation projects stop at "reconstruct and show it looks good." This p
 
 ---
 
+### Ammar Yasser — Experiments, Analysis & Presentation
+
+**Responsibilities:**
+- Design and execute all systematic experiments (parameter sweeps across projections, dose, filters)
+- Compute basic image quality metrics (RMSE, SSIM, SNR) across all experiments
+- Produce all comparison plots, summary tables, and publication-quality figures
+- Lead presentation slide preparation and final integration
+- Co-lead the integrated system characterization (Experiment 5)
+
+**Must understand:**
+- What RMSE, SSIM, and SNR measure and their limitations as image quality metrics
+- How to design a systematic parameter sweep and present results clearly
+- The big picture: how all modules connect (phantom → sinogram → noise → reconstruction → metrics)
+- How MTF, NPS, and CNR provide a more complete picture than basic metrics alone
+
+---
+
 ## 4. Shared Responsibilities (All Members)
 
 - **Everyone** must understand the full pipeline and be able to explain any part
 - **Everyone** prepares for the professor's Q&A individually
 - **Everyone** should understand what MTF, NPS, and CNR mean at a conceptual level
 - Code reviews: each member reviews at least one other member's module
-- Presentation: each member presents their module (~5 min each)
+- Presentation: each member presents their module (~4 min each)
 
 ---
 
