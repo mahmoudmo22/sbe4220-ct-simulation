@@ -257,6 +257,7 @@ This is the most critical section. The professor will grill each member individu
 ### 8.1 Physics of X-ray CT
 
 #### Beer-Lambert Law (everyone must know cold)
+*(Reference: Prince & Links, Section 4.5.2 - Narrow Beam, Monoenergetic Photons)*
 ```
 I = I₀ · exp(−∫ μ(x,y) dl)
 ```
@@ -288,6 +289,7 @@ HU = 1000 × (μ − μ_water) / μ_water
 ### 8.2 Mathematics of CT Reconstruction
 
 #### The Radon Transform (core concept)
+*(Reference: Prince & Links, Section 6.3.1 - Line Integrals)*
 ```
 p(θ, s) = ∫∫ μ(x,y) · δ(x·cosθ + y·sinθ − s) dx dy
 ```
@@ -300,6 +302,7 @@ p(θ, s) = ∫∫ μ(x,y) · δ(x·cosθ + y·sinθ − s) dx dy
 - "Why is it called a sinogram?" → A point at (x₀, y₀) appears as a sinusoidal curve: s = x₀·cosθ + y₀·sinθ
 
 #### The Fourier Slice Theorem (most important theorem)
+*(Reference: Prince & Links, Chapter 2 - Signals and Systems, Sections 2.4 & 2.5.6)*
 ```
 F₁D{p(θ, s)}(ω) = F₂D{μ(x,y)}(ω·cosθ, ω·sinθ)
 ```
@@ -311,6 +314,7 @@ F₁D{p(θ, s)}(ω) = F₂D{μ(x,y)}(ω·cosθ, ω·sinθ)
 - "What happens with too few angles?" → Fourier space is undersampled, leading to streak artifacts (missing information between the measured slices).
 
 #### Filtered Back Projection (the main reconstruction algorithm)
+*(Reference: Prince & Links, Section 6.3.3 - Parallel-Ray Reconstruction)*
 
 **Step 1 — Filter each projection:**
 ```
@@ -334,6 +338,7 @@ For each pixel (x,y), sum the filtered projection values from all angles.
 ### 8.3 Noise and Dose
 
 #### Poisson Noise Model
+*(Reference: Prince & Links, Section 3.4.3 - Discrete Random Variables & Section 5.4 - Noise and Scattering)*
 ```
 I_measured ~ Poisson(I₀ · exp(−∫μ dl))
 ```
@@ -352,6 +357,7 @@ I_measured ~ Poisson(I₀ · exp(−∫μ dl))
 This section is what sets your project apart. Every team member must be able to explain these concepts.
 
 #### 8.4.1 Modulation Transfer Function (MTF)
+*(Reference: Prince & Links, Sections 3.2.2 for MTF, 3.3.1 for LSF, 3.3.2 for FWHM)*
 
 **What it is:** MTF describes how well the CT system preserves contrast at each spatial frequency. MTF(f) = 1 means perfect reproduction; MTF(f) = 0 means that frequency is completely lost.
 
@@ -384,6 +390,7 @@ For 1D:  MTF(f) = |F{LSF(x)}|
 - "What limits the MTF in your simulation?" → Pixel size (discrete sampling), number of projections (angular sampling), detector bin width, and the reconstruction filter.
 
 #### 8.4.2 Noise Power Spectrum (NPS)
+*(Reference: Prince & Links, Section 3.5.2 - Power SNR)*
 
 **What it is:** NPS describes the frequency content of noise. Unlike a single standard deviation (σ), NPS tells you *where* the noise energy sits in the frequency domain. This matters because noise at different frequencies affects image quality differently.
 
@@ -412,6 +419,7 @@ where ⟨·⟩ denotes averaging over multiple ROIs, Δx/Δy are pixel sizes, Nx
 - "What is the relationship between NPS and noise variance?" → The integral of NPS over all frequencies equals the noise variance σ²: `σ² = ∫∫ NPS(u,v) du dv`.
 
 #### 8.4.3 Contrast-to-Noise Ratio (CNR)
+*(Reference: Prince & Links, Section 3.5.3 - Differential SNR)*
 
 **What it is:** CNR measures how distinguishable an object (insert) is from its surrounding background. It's the most clinically intuitive metric — "can you see the lesion?"
 
@@ -469,6 +477,7 @@ A good CT system has: high MTF, low NPS, and high CNR. But these compete — the
 ---
 
 ### 8.5 Artifacts (know causes and appearance)
+*(Reference: Prince & Links, Section 6.4 - Image Quality in CT)*
 
 | Artifact | Cause | Appearance |
 |----------|-------|------------|

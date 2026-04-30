@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D CT Simulation & System Characterization</title>
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <!-- Reveal.js Theme (Simple/Academic look) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/simple.min.css">
+
+    <style>
+        /* Custom Styles for the Presentation */
+        .reveal h1,
+        .reveal h2,
+        .reveal h3 {
+            color: #2c3e50;
+            text-transform: none;
+            font-weight: 600;
+        }
+
+        .reveal p,
+        .reveal li {
+            font-size: 0.8em;
+            line-height: 1.6;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .flex-col {
+            flex: 1;
+        }
+
+        .math-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+
+        .placeholder-box {
+            border: 3px dashed #bdc3c7;
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+            padding: 20px;
+            margin: 15px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            min-height: 200px;
+            border-radius: 12px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .speaker-badge {
+            position: absolute;
+            bottom: -50px;
+            right: 0px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.45em;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .instruction-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: sans-serif;
+            font-size: 14px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Floating instruction for presenter -->
+    <div class="instruction-toast">
+        💡 <strong>Tip:</strong> Press <strong>'S'</strong> on your keyboard to open the Speaker Notes window!
+    </div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title & Introduction -->
+            <section>
+                <h2>2D CT Simulation & <br>System Characterization</h2>
+                <h4 style="color: #7f8c8d;">SBE 4220 — Medical Imaging II</h4>
+
+                <div style="margin-top: 50px; background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                    <p style="margin-bottom: 10px;"><strong>Team 18</strong></p>
+                    <div style="display: flex; justify-content: center; gap: 40px; font-size: 0.75em;">
+                        <ul style="list-style-type: none; padding: 0; text-align: left;">
+                            <li>• Mahmoud Mohamed</li>
+                            <li>• Mahmoud Bahaa</li>
+                            <li>• Mohamed Ashraf</li>
+                        </ul>
+                        <ul style="list-style-type: none; padding: 0; text-align: left;">
+                            <li>• Rashed Mamdouh</li>
+                            <li>• Ammar Yasser</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.65em; margin-top: 40px; color: #34495e;">
+                    <strong>Project Objective:</strong> Build a complete simulation pipeline capable of
+                    <em>quantitatively evaluating</em> scanner performance (MTF, NPS, CNR).
+                </p>
+
+                <div class="speaker-badge">🎤 Speaker: Mahmoud Mohamed</div>
+
+                <!-- Speaker Notes -->
+                <aside class="notes">
+                    Goal: Set the stage. Explain that the project objective was not just to write a CT simulator, but to
+                    build a pipeline capable of quantitatively evaluating scanner performance (MTF, NPS, CNR).
+                </aside>
+            </section>
+
+            <!-- Slide 2: Data Acquisition & Physics -->
+            <section>
+                <h3>Data Acquisition & Physics</h3>
+
+                <div class="flex-container">
+                    <div class="flex-col" style="text-align: left;">
+                        <div class="math-block">
+                            <strong>Beer-Lambert Law:</strong>
+                            $$I = I_0 e^{-\int \mu(x,y) dl}$$
+                        </div>
+                        <div class="math-block">
+                            <strong>Radon Transform:</strong>
+                            $$p(s, \theta) = \int \int \mu(x,y) \delta(x\cos\theta + y\sin\theta - s) dx dy$$
+                        </div>
+                    </div>
+
+                    <div class="flex-col">
+                        <div class="placeholder-box" style="min-height: 160px;">
+                            <span style="font-size: 2em; margin-bottom: 10px;">🧠</span>
+                            [ Insert 2D Shepp-Logan Phantom ]
+                        </div>
+                        <div class="placeholder-box" style="min-height: 160px;">
+                            <span style="font-size: 2em; margin-bottom: 10px;">📐</span>
+                            [ Insert Parallel-beam Overlay Diagram ]<br>
+                            <small>(Showing red rays passing through the phantom)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="speaker-badge">🎤 Speaker: Mahmoud Mohamed</div>
+
+                <aside class="notes">
+                    Talking Points: Explain how parallel rays simulate physical X-ray line integrals across the 2D
+                    slice. Describe the relationship between the attenuation coefficient (mu) and the measured
+                    intensity.
+                </aside>
+            </section>
+
+            <!-- Slide 3: Filtered Back-Projection (FBP) -->
+            <section>
+                <h3 style="font-size: 1.3em;">The Filtered Back-Projection (FBP) Algorithm</h3>
+
+                <div class="math-block" style="text-align: center;">
+                    <strong>Back-projection integral:</strong>
+                    $$\mu(x,y) = \int_0^\pi p_{filtered}(\theta, x\cos\theta + y\sin\theta) d\theta$$
+                </div>
+
+                <div class="flex-container">
+                    <div class="flex-col">
+                        <div class="placeholder-box">
+                            <span style="font-size: 2em; margin-bottom: 10px;">📊</span>
+                            [ Insert Clean Sinogram Plot ]
+                        </div>
+                    </div>
+                    <div class="flex-col" style="flex: 0.1; font-size: 2em; color: #3498db;">
+                        ➔
+                    </div>
+                    <div class="flex-col">
+                        <div class="placeholder-box">
+                            <span style="font-size: 2em; margin-bottom: 10px;">🖼️</span>
+                            [ Insert Final Reconstructed Image ]
+                        </div>
+                    </div>
+                </div>
+
+                <div class="speaker-badge">🎤 Speaker: Mahmoud Bahaa</div>
+
+                <aside class="notes">
+                    Talking Points:
+                    - Mention the Fourier Slice Theorem.
+                    - Explain *why* the Ramp Filter (|w|) is physically necessary to correct the polar-to-Cartesian
+                    sampling density.
+                    - Mention why it causes high-frequency noise amplification without a windowing function.
+                </aside>
+            </section>
+
+            <!-- Slide 4: Noise & Dose Modeling -->
+            <section>
+                <h3>Noise & Dose Modeling</h3>
+
+                <div class="flex-container">
+                    <div class="flex-col" style="text-align: left;">
+                        <div class="math-block">
+                            <strong>Poisson Statistics:</strong>
+                            $$I_{measured} \sim \text{Poisson}(I_{expected})$$
+                        </div>
+                        <div class="math-block">
+                            <strong>The Variance Rule:</strong>
+                            $$\frac{\sigma}{\mu} = \frac{1}{\sqrt{I_0}}$$
+                        </div>
+                    </div>
+
+                    <div class="flex-col">
+                        <div class="placeholder-box">
+                            <span style="font-size: 2em; margin-bottom: 10px;">☢️</span>
+                            [ Insert High Dose Sinogram ]
+                            <br>
+                            <hr style="width: 50%; border: 1px dashed #bdc3c7;"><br>
+                            [ Insert Low Dose Sinogram ]
+                        </div>
+                    </div>
+                </div>
+
+                <div class="speaker-badge">🎤 Speaker: Mohamed Ashraf</div>
+
+                <aside class="notes">
+                    Talking Points:
+                    - Emphasize that noise is added in the *pre-log intensity domain*, not the sinogram domain, because
+                    photon counting is a Poisson process.
+                    - Explain that halving the dose increases noise by sqrt(2).
+                </aside>
+            </section>
+
+            <!-- Slide 5: Quantitative Evaluation Metrics -->
+            <section>
+                <h3>Quantitative Evaluation Metrics</h3>
+
+                <div class="flex-container">
+                    <div class="flex-col" style="text-align: left;">
+                        <div class="math-block">
+                            <strong>Spatial Resolution (MTF):</strong>
+                            $$\text{MTF}(f) = \left| \mathcal{F}\left\{\frac{d}{dx}\text{ESF}(x)\right\} \right|$$
+                        </div>
+                        <div class="math-block">
+                            <strong>Detectability (CNR):</strong>
+                            $$\text{CNR} = \frac{|\mu_{insert} - \mu_{bg}|}{\sigma_{bg}}$$
+                        </div>
+                    </div>
+
+                    <div class="flex-col">
+                        <div class="placeholder-box" style="min-height: 250px;">
+                            <span style="font-size: 2em; margin-bottom: 10px;">🎯</span>
+                            [ Insert QA Phantom Screenshot ]<br>
+                            <small>(Showing the edge used for MTF and the circles used for CNR)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="speaker-badge">🎤 Speaker: Rashed Mamdouh</div>
+
+                <aside class="notes">
+                    Talking Points:
+                    - Briefly define MTF (Spatial Resolution) and NPS (Noise Texture).
+                    - Explain the Rose Criterion: A tumor is only detectable by a human observer if CNR >= 3.
+                </aside>
+            </section>
+
+            <!-- Slide 6: Experimental Results — Filters -->
+            <section>
+                <h3>Experimental Results — Filters</h3>
+
+                <p style="text-align: center; font-size: 0.7em; margin-bottom: 20px;">
+                    <em>Trading spatial resolution for noise suppression</em>
+                </p>
+
+                <div class="flex-container">
+                    <div class="flex-col">
+                        <div class="placeholder-box" style="min-height: 300px;">
+                            <span style="font-size: 2em; margin-bottom: 10px;">📈</span>
+                            [ Insert `exp2_mtf.png` ]<br>
+                            <small>(MTF response of different filters)</small>
+                        </div>
+                    </div>
+
+                    <div class="flex-col">
+                        <div class="placeholder-box" style="min-height: 300px;">
+                            <span style="font-size: 2em; margin-bottom: 10px;">📉</span>
+                            [ Insert `exp2_nps.png` ]<br>
+                            <small>(NPS texture of different filters)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="speaker-badge">🎤 Speaker: Ammar Yasser</div>
+
+                <aside class="notes">
+                    Talking Points:
+                    - Show the fundamental tradeoff: Ram-Lak has the highest spatial resolution (best MTF) but the most
+                    high-frequency noise (worst NPS).
+                    - Hamming sacrifices resolution to suppress noise.
+                </aside>
+            </section>
+
+            <!-- Slide 7: Experimental Results — Dose & Projections -->
+            <section>
+                <h3 style="font-size: 1.2em;">Experimental Results — Dose & Projections</h3>
+
+                <div class="flex-container">
+                    <div class="flex-col">
+                        <div class="placeholder-box" style="min-height: 300px;">
+                            <span style="font-size: 2em; margin-bottom: 10px;">📉</span>
+                            [ Insert `exp3_cnr.png` ]<br>
+                            <small>(CNR vs. Dose curve)</small>
+                        </div>
+                    </div>
+
+                    <div class="flex-col">
+                        <div class="placeholder-box" style="min-height: 300px;">
+                            <span style="font-size: 2em; margin-bottom: 10px;">📉</span>
+                            [ Insert `exp4_mtf.png` ]<br>
+                            <small>(MTF vs. Projections curve)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="speaker-badge">🎤 Speaker: Ammar Yasser</div>
+
+                <aside class="notes">
+                    Talking Points:
+                    - Point to the exact dose level where the CNR curve drops below the Rose Criterion line (3.0).
+                    - Show how dropping from 360 to 45 angles destroys the high-frequency MTF response.
+                </aside>
+            </section>
+
+            <!-- Slide 8: Live Dashboard Demonstration -->
+            <section>
+                <h3>Live Dashboard Demonstration!</h3>
+
+                <div class="placeholder-box"
+                    style="min-height: 400px; background-color: #34495e; color: white; border: none;">
+                    <span style="font-size: 3em; margin-bottom: 20px;">💻</span>
+                    <h4 style="color: white; margin: 0;">Streamlit App Simulation</h4>
+                    <p style="color: #bdc3c7; font-family: monospace;">http://localhost:8501</p>
+                    <br>
+                    <p style="font-size: 1.2em;">[ Switch to Live Screen Share ]</p>
+                </div>
+
+                <div class="speaker-badge">🎤 Speaker: Transition / Any Member</div>
+
+                <aside class="notes">
+                    Action:
+                    - Drag the sliders live in front of the professor.
+                    - Lower the dose and watch the CNR fail the Rose Criterion.
+                    - Change the filter to Hamming and watch the MTF curve shift downwards.
+
+                    Closing: "This tool allows us to characterize any theoretical 2D CT scanner instantly."
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+
+    <script>
+        // Initialize Reveal.js
+        Reveal.initialize({
+            controls: true,
+            progress: true,
+            center: true,
+            hash: false,
+            transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+            // Learn about plugins: https://revealjs.com/plugins/
+            plugins: [RevealMath.KaTeX, RevealNotes],
+
+            // Presentation Dimensions
+            width: 1024,
+            height: 700,
+            margin: 0.1,
+
+            // UI configuration
+            slideNumber: 'c/t'
+        });
+
+        // Hide instruction toast after 8 seconds
+        setTimeout(() => {
+            const toast = document.querySelector('.instruction-toast');
+            if (toast) {
+                toast.style.transition = 'opacity 1s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 1000);
+            }
+        }, 8000);
+    </script>
+</body>
+
+</html>
