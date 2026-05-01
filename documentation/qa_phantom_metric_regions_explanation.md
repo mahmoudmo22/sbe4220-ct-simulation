@@ -36,7 +36,7 @@ Location:
 
 - on the right edge of the bright rectangular slab.
 
-### Why This Region Is Used
+### Why the MTF Edge Is Used
 
 MTF measures spatial resolution. To estimate MTF using the edge method, we need a sharp edge.
 
@@ -48,7 +48,7 @@ background attenuation -> bright slab attenuation
 
 The reconstruction blurs this sharp transition. The amount of blur tells us about spatial resolution.
 
-### Mathematical Idea
+### MTF Mathematical Idea
 
 From the reconstructed edge:
 
@@ -68,11 +68,11 @@ Then compute:
 MTF(f) = |FFT(LSF)| / |FFT(LSF)(0)|
 ```
 
-### What To Say to the Professor
+### MTF Talking Point
 
 > The cyan line marks the edge used for edge-based MTF. We extract a profile across this sharp transition, differentiate it to get the line spread function, and then take its Fourier transform to estimate spatial resolution.
 
-### Important Caveat
+### MTF Caveat
 
 This is a simplified edge MTF. A clinical-grade method would usually use a slanted edge and oversampling. Here, the goal is educational: to show how filter choice affects spatial resolution.
 
@@ -86,13 +86,13 @@ Location:
 
 - around the lower-right low-contrast circular insert.
 
-### Why This Region Is Used
+### Why the CNR Insert Is Used
 
 CNR measures object detectability. The low-contrast insert represents a subtle object that should be detected against the background.
 
 The green ROI measures the average reconstructed intensity inside the insert.
 
-### Mathematical Idea
+### CNR Insert Mathematical Idea
 
 The insert mean is:
 
@@ -106,11 +106,11 @@ This is compared with the background mean and noise:
 CNR = |mu_insert - mu_background| / sigma_background
 ```
 
-### What To Say to the Professor
+### CNR Insert Talking Point
 
 > The green circle is the target object for CNR. It is intentionally low contrast, so its detectability depends strongly on the noise level.
 
-### Important Caveat
+### CNR Insert Caveat
 
 The ROI is smaller than the actual insert radius to avoid edge partial-volume effects. This is why the circle does not cover the full visible insert.
 
@@ -124,7 +124,7 @@ Location:
 
 - in the central uniform background area.
 
-### Why This Region Is Used
+### Why the CNR Background Is Used
 
 CNR needs a reference background region. The yellow circle is placed in a relatively uniform region of the phantom, away from the high-contrast slab and low-contrast inserts.
 
@@ -135,11 +135,11 @@ mu_background = mean(yellow ROI)
 sigma_background = std(yellow ROI)
 ```
 
-### What To Say to the Professor
+### CNR Background Talking Point
 
 > The yellow circle estimates the background mean and background noise. CNR compares the green insert against this background.
 
-### Important Caveat
+### CNR Background Caveat
 
 The background ROI must avoid structures and edges. If it overlaps an edge or artifact, the standard deviation would include structure instead of pure noise, making CNR misleading.
 
@@ -153,7 +153,7 @@ Location:
 
 - centered around the uniform background region.
 
-### Why This Region Is Used
+### Why the NPS ROI Is Used
 
 NPS measures the frequency content of noise. For this, we need a region that should be uniform in the true phantom.
 
@@ -175,11 +175,11 @@ and radially averages it to obtain:
 NPS(f)
 ```
 
-### What To Say to the Professor
+### NPS Talking Point
 
 > The magenta square marks a uniform region used for NPS. Since the true object is approximately constant there, variations inside that ROI mainly represent noise and reconstruction texture.
 
-### Important Caveat
+### NPS Caveat
 
 In the actual `compute_nps()` function, multiple ROIs are sampled around the center region. The magenta square is a representative visual marker, not necessarily every ROI used internally.
 
