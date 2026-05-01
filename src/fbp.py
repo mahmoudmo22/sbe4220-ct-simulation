@@ -146,7 +146,7 @@ def make_filter(filter_name, n):
 #  Filtered Back Projection
 # ---------------------------------------------------------------------------
 
-def filter_projections(sinogram, filter_name="ram-lak"):
+def filter_projections(sinogram, filter_name="ram-lak", detector_spacing=None):
     """
     Apply frequency-domain filtering to all projections in a sinogram.
 
@@ -162,6 +162,9 @@ def filter_projections(sinogram, filter_name="ram-lak"):
         Input sinogram (projection data).
     filter_name : str, optional
         Filter kernel to use.  Default is ``'ram-lak'``.
+    detector_spacing : float, optional
+        Physical spacing between detector bins. If None, it assumes the 
+        standard normalised geometry of width 2.0: 2.0 / (num_detectors - 1).
 
     Returns
     -------
@@ -186,11 +189,18 @@ def filter_projections(sinogram, filter_name="ram-lak"):
     """
     num_detectors, num_angles = sinogram.shape
 
+    if detector_spacing is None:
+        # Avoid division by zero if num_detectors is 1 (unlikely)
+        detector_spacing = 2.0 / max(1, num_detectors - 1)
+
     # Pad to next power of 2 for efficient FFT
     n_padded = int(2 ** np.ceil(np.log2(num_detectors)))
 
     # Build the filter
     filt = make_filter(filter_name, n_padded)
+    
+    # Scale filter by 1 / detector_spacing to match the continuous FT integration
+    filt = filt / detector_spacing
 
     # Filter each projection
     filtered = np.zeros_like(sinogram)
@@ -304,7 +314,7 @@ def backproject(filtered_sinogram, angles_deg, output_size=None):
 
 
 def reconstruct_fbp(sinogram, angles_deg, filter_name="ram-lak",
-                    output_size=None):
+                    output_size=None, detector_spacing=None):
     """
     Full FBP reconstruction: filter + back-project.
 
@@ -321,6 +331,8 @@ def reconstruct_fbp(sinogram, angles_deg, filter_name="ram-lak",
         Filter kernel.  Default is ``'ram-lak'``.
     output_size : int or None, optional
         Size of the output image.
+    detector_spacing : float, optional
+        Physical spacing between detector bins. If None, uses default.
 
     Returns
     -------
@@ -335,7 +347,7 @@ def reconstruct_fbp(sinogram, angles_deg, filter_name="ram-lak",
     >>> sinogram, angles = generate_sinogram_fast(phantom, 180)
     >>> recon = reconstruct_fbp(sinogram, angles, filter_name='ram-lak')
     """
-    filtered = filter_projections(sinogram, filter_name)
+    filtered = filter_projections(sinogram, filter_name, detector_spacing=detector_spacing)
     reconstruction = backproject(filtered, angles_deg, output_size)
     return reconstruction
 
