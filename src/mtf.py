@@ -343,9 +343,9 @@ def compute_mtf_from_reconstruction(reconstruction, method="edge",
 
     elif method.lower() == "edge":
         if edge_row_range is None:
-            # Default: middle 60% of the image
+            # Default: middle 20% of the image (safely inside the edge insert bounds)
             N = reconstruction.shape[0]
-            edge_row_range = (int(0.2 * N), int(0.8 * N))
+            edge_row_range = (int(0.4 * N), int(0.6 * N))
         esf, _ = extract_esf(reconstruction, edge_row_range, edge_col)
         freq, mtf = compute_mtf_from_edge(esf)
         return freq, mtf

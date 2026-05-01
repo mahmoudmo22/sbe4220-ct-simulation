@@ -193,8 +193,8 @@ def filter_projections(sinogram, filter_name="ram-lak", detector_spacing=None):
         # Avoid division by zero if num_detectors is 1 (unlikely)
         detector_spacing = 2.0 / max(1, num_detectors - 1)
 
-    # Pad to next power of 2 for efficient FFT
-    n_padded = int(2 ** np.ceil(np.log2(num_detectors)))
+    # Pad to next power of 2 (must be at least 2*N to avoid circular convolution wrap-around artifacts)
+    n_padded = int(2 ** np.ceil(np.log2(num_detectors * 2)))
 
     # Build the filter
     filt = make_filter(filter_name, n_padded)
