@@ -199,7 +199,8 @@ def radial_average(image_2d):
 #  Edge-based MTF (ESF → LSF → MTF)
 # ---------------------------------------------------------------------------
 
-def extract_esf(reconstruction, edge_row_range, edge_col, direction="horizontal"):
+def extract_esf(reconstruction, edge_row_range, edge_col=None,
+                direction="horizontal", profile_half_width=None):
     """
     Extract the Edge Spread Function (ESF) from a reconstruction.
 
@@ -213,11 +214,16 @@ def extract_esf(reconstruction, edge_row_range, edge_col, direction="horizontal"
     edge_row_range : tuple of int
         (row_start, row_end) — rows over which to average the edge profile
         (for noise reduction).
-    edge_col : int
-        Approximate column position of the edge (used to centre extraction).
+    edge_col : int or None
+        Approximate column position of the edge. If provided, the ESF is
+        cropped around this column so a single edge is measured. If None,
+        the strongest edge away from the image boundary is used.
     direction : str, optional
         Direction of the edge profile.  ``"horizontal"`` means the profile
         is extracted along rows (perpendicular to a vertical edge).
+    profile_half_width : int or None, optional
+        Half-width of the profile crop around ``edge_col``. If None, a
+        conservative image-size-dependent default is used.
 
     Returns
     -------
@@ -228,11 +234,29 @@ def extract_esf(reconstruction, edge_row_range, edge_col, direction="horizontal"
     """
     row_start, row_end = edge_row_range
 
+    if direction != "horizontal":
+        raise NotImplementedError("Only horizontal ESF extraction is currently supported.")
+
     # Average multiple rows for noise reduction
     edge_region = reconstruction[row_start:row_end, :]
-    esf = np.mean(edge_region, axis=0)
+    full_esf = np.mean(edge_region, axis=0)
 
-    positions = np.arange(len(esf))
+    if edge_col is None:
+        # Ignore the outer disk boundary and localize the strongest internal edge.
+        margin = max(2, int(0.1 * len(full_esf)))
+        gradient = np.abs(np.gradient(full_esf))
+        search = gradient[margin:len(full_esf) - margin]
+        edge_col = margin + int(np.argmax(search))
+
+    if profile_half_width is None:
+        profile_half_width = max(8, len(full_esf) // 10)
+
+    edge_col = int(np.clip(edge_col, 0, len(full_esf) - 1))
+    col_start = max(0, edge_col - profile_half_width)
+    col_end = min(len(full_esf), edge_col + profile_half_width)
+
+    esf = full_esf[col_start:col_end]
+    positions = np.arange(col_start, col_end)
 
     return esf, positions
 

@@ -51,6 +51,28 @@ filter_name = st.sidebar.selectbox("Reconstruction Filter", AVAILABLE_FILTERS, i
 def get_phantom():
     return generate_qa_phantom(size=256)
 
+def estimate_threshold_frequency(freq, values, threshold=0.1):
+    """Return the first interpolated frequency where the curve crosses a threshold."""
+    freq = np.asarray(freq)
+    values = np.asarray(values)
+    finite = np.isfinite(freq) & np.isfinite(values)
+    freq = freq[finite]
+    values = values[finite]
+
+    below = np.where(values <= threshold)[0]
+    if below.size == 0:
+        return None
+
+    idx = below[0]
+    if idx == 0:
+        return freq[0]
+
+    f0, f1 = freq[idx - 1], freq[idx]
+    v0, v1 = values[idx - 1], values[idx]
+    if v1 == v0:
+        return f1
+    return f0 + (threshold - v0) * (f1 - f0) / (v1 - v0)
+
 phantom, metadata = get_phantom()
 
 with st.spinner("Acquiring data and running reconstruction pipeline..."):
@@ -64,7 +86,12 @@ with st.spinner("Acquiring data and running reconstruction pipeline..."):
     reconstruction = reconstruct_fbp(noisy_sino, angles, filter_name=filter_name)
     
     # 4. Extract Performance Metrics
-    freq_mtf, mtf_vals = compute_mtf_from_reconstruction(reconstruction, method="edge")
+    # Use the known QA slab edge so MTF is measured from one localized edge.
+    edge_x = metadata["edge_insert"]["x_range_norm"][1]
+    edge_col = int((edge_x + 1.0) / 2.0 * (reconstruction.shape[1] - 1))
+    freq_mtf, mtf_vals = compute_mtf_from_reconstruction(
+        reconstruction, method="edge", edge_col=edge_col
+    )
     freq_nps, nps_vals, _, _ = compute_nps(reconstruction, roi_size=32, num_rois=8, center=(128, 128))
     cnr, _ = compute_cnr_from_qa_phantom(reconstruction, metadata)
     rmse = compute_rmse(reconstruction, phantom)
@@ -84,8 +111,9 @@ col_kpi1.metric("Contrast-to-Noise Ratio (CNR)", f"{cnr:.2f}", rose_status, delt
 col_kpi2.metric("Root Mean Square Error (RMSE)", f"{rmse:.4f}")
 
 # Find spatial frequency at 10% MTF as a metric
-mtf_10_idx = np.argmin(np.abs(mtf_vals - 0.1))
-col_kpi3.metric("Spatial Resolution (10% MTF)", f"{freq_mtf[mtf_10_idx]:.2f} cyc/px")
+mtf_10_freq = estimate_threshold_frequency(freq_mtf, mtf_vals, threshold=0.1)
+mtf_10_label = f"{mtf_10_freq:.2f} cyc/px" if mtf_10_freq is not None else "Not reached"
+col_kpi3.metric("Spatial Resolution (10% MTF)", mtf_10_label)
 
 st.divider()
 
